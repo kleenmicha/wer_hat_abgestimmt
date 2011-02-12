@@ -1,1 +1,0 @@
-ALTER TABLE `bb1_votes` CHANGE `voteid` `voteid` VARCHAR( 250 ) NOT NULL;
