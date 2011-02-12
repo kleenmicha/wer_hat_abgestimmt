@@ -11,7 +11,7 @@
 $filename = 'mod_whovote.php';
 
 if (!$_REQUEST['pollid'] || !$wbbuserdata['a_can_view_whovote'] && ($board['allowwhovote'] == 1 || $showwhovote == 1)) {
-	die('No Access');
+	access_error();
 }
 else $pollid = wbb_trim( $_REQUEST['pollid'] );
 

@@ -2,7 +2,7 @@
 <install>
 	<installer>
 		<name>Wer hat abgestimmt</name>
-		<version>2.3.1</version>
+		<version>2.4</version>
 		<wbbversion>2.3.6</wbbversion>
 		<description>Dies ist das Update von: </description>
 		<updatefrom>2.3</updatefrom>

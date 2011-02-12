@@ -2,7 +2,7 @@
 Wer hat schon abgestimmt?
 Boardversion: mind 2.3.6pl2
 Update von Version: 2.3
-Hackversion: 2.3.1
+Hackversion: 2.4
 Originalautor: Master X
 Recodet und ans WBB 2.3.x angepasst von: Agi
 Überarbeitet von:KleenMicha

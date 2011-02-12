@@ -7,8 +7,8 @@
 
 [acp_board]
 
-<text:LANG_ACP_BOARD_WHOVOTE_DESC>Soll die Anzeige, wer Abgestimmt hat aktiviert sein?</LANG_ACP_BOARD_WHOVOTE_DESC:text>
-<text:LANG_ACP_BOARD_WHOVOTE_DESC>Wenn diese Funktion aktiviert ist, ist es m&ouml;glich, sofern man die Benutzerrechte hat, zu sehen wer abgestimmt hat, in diesem Forum.</LANG_ACP_BOARD_WHOVOTE_DESC:text>
+<text:LANG_ACP_BOARD_WHOVOTE_DESC>Soll die Anzeige, Wer Abgestimmt hat aktiviert sein?</LANG_ACP_BOARD_WHOVOTE_DESC:text>
+<text:LANG_ACP_BOARD_WHOVOTE_DESC>Wenn diese Funktion aktiviert ist es m&ouml;glich, sofern man die Benutzerrechte hat, zu sehen wer abgestimmt hat, in diesem Forum.</LANG_ACP_BOARD_WHOVOTE_DESC:text>
 
 
 

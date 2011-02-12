@@ -1,5 +1,15 @@
 ++++++++++++ ChangeLog ++++++++++++
 
+++++++++++++ Wer hat abgestimmt 2.4 ++++++++++++
+
+-- 12.02.11
+
+++++++ behobene Fehler und Probleme ++++++
+- Korrekte Prüfung eingegebener Daten im Adminbereich
+- Fixed Installer für PHP 5.3.x
+- Rechtschreibfehler korrigiert
+
+
 ++++++++++++ Wer hat abgestimmt 2.3.1 ++++++++++++
 
 -- 02.10.07

@@ -2,7 +2,7 @@
 <install>
 	<installer>
 		<name>Wer hat abgestimmt</name>
-		<version>2.3.1</version>
+		<version>2.4</version>
 		<wbbversion>2.3.6</wbbversion>
 		<description>Dies ist die Grundinstallation von</description>
 		<license>http://www.gnu.de/gpl-ger.html</license>

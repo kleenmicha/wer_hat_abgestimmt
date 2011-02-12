@@ -12,7 +12,7 @@ if (!file_exists("./$setupfile")) die("Bitte laden Sie die Datei ./acp/$setupfil
 @set_magic_quotes_runtime(0);
 $phpversion = phpversion();
 
-// WBB-Funktionen includen und Datenbank öffnen
+// WBB-Funktionen includen und Datenbank ?ffnen
 require("./lib/config.inc.php");
 require("./lib/class_db_mysql.php");
 require("./lib/functions.php");
@@ -35,7 +35,7 @@ class chooseLine {
  * @access public
  * @return each line
 */
-function readingxml($setupfile) {
+function readinSetup($setupfile) {
 	$handle = @fopen ($setupfile, "r");
 
 	$data = fread ($handle, filesize($setupfile));
@@ -48,12 +48,13 @@ function readingxml($setupfile) {
 	xml_parser_free($parser);
 
 	foreach ($tags as $key=>$val) {
-		if ($key == "installer" || $key == "informel") {
+if ($key == "installer" || $key == "files" || $key == "informel") {
 			$molranges = $val;
+
 			for ($i=0; $i < 2; $i+=2) {
 				$offset = $molranges[$i] + 1;
 				$len = $molranges[$i + 1] - $offset;
-				$tdb[] = parseLine(array_slice($values, $offset, $len));
+$tdb[] = parseLine(array_slice($values, $offset, $len), $key);
 			}
 		}
 		else continue;
@@ -61,8 +62,9 @@ function readingxml($setupfile) {
 	return $tdb;
 }
 
-function parseLine($mvalues) {
-	for ($i=0; $i < count($mvalues); $i++) $mol[$mvalues[$i]["tag"]] = $mvalues[$i]["value"];
+function parseLine($mvalues, $key) {
+if ($key == 'files') for ($i=0; $i < count($mvalues); $i++) $mol[$mvalues[$i]["tag"]] .= $mvalues[$i]["value"]. ',';
+else for ($i=0; $i < count($mvalues); $i++) $mol[$mvalues[$i]["tag"]] = $mvalues[$i]["value"];
 	return new chooseLine($mol);
 }
 
@@ -147,9 +149,9 @@ a:hover {
 </style>
 </head>
 <body>
- <table align="center" width="640">
+ <table align="center" width="400">
   <tr>
-   <td><br /><br />Folgender Fehler ist, beim installieren, aufgetreten.<br />'.$error.'</td>
+   <td><br /><br />Folgender Fehler ist, beim installieren, aufgetreten.<br />Fehlermeldung: '.$error.'</td>
   </tr>
  </table>
 </body>
@@ -157,7 +159,7 @@ a:hover {
  exit();
 }
 
-if(version_compare($phpversion, '4.1.0')==-1) {
+if(version_compare($phpversion, "4.1.0")==-1) {
  $_REQUEST=array_merge($HTTP_COOKIE_VARS,$HTTP_POST_VARS,$HTTP_GET_VARS);
  $_COOKIE=&$HTTP_COOKIE_VARS;
  $_SERVER=&$HTTP_SERVER_VARS;
@@ -169,16 +171,17 @@ if(version_compare($phpversion, '4.1.0')==-1) {
 if(isset($_REQUEST['step'])) $step = intval($_REQUEST['step']);
 else $step = 0;
 
-$do = readingXML($setupfile);
+$do = readinSetup($setupfile);
+$title = $do[0]->title;
 if ($do[0]->updatefrom == '' ) $installtype = 'Installation';
 else $installtype  = 'Update';
 
-$header = '<?xml version="1.0" encoding="iso-8859-1"?>
+print '<?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="de" xml:lang="de">
-<head><meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-<title>'.$do[0]->name.'</title>
-<style type="text/css">
+<head><meta http-equiv="Content-Type" content="text/html;charset=utf-8" />';
+print '<title>'.$title.'</title>';
+print '<style type="text/css">
 body {
  color: #000;
  font: 13px Trebuchet MS, sans-serif;
@@ -203,7 +206,7 @@ small { font-size: 85%; }
 
 .red { color: #F00; }
 
-.green { color: #080; }
+.green { color: green; }
 
 .red a:link, .red a:visited, .red a:active {
  color: #F60;
@@ -221,7 +224,7 @@ ul {
  list-style-type: none;
  padding: 5px;
  margin: 10px 0 10px 0;
- border: 1px solid #F00;
+ border: 1px solid #f00;
  color: #E36363;
 }
 </style>
@@ -236,15 +239,11 @@ ul {
  <table border="0" cellspacing="0" cellpadding="0" align="center">
   <tr>
    <td width="100%" align="left">';
-   
-	$header .= '<h2>'.$do[0]->name.'</h2><br />';
-	$header .= $do[0]->description.' '.$do[0]->name.' <span class="red">'.$do[0]->version.'</span>!<br /><br />';
 
 if (!$step) {
 	// WBB-Version checken
 	list($wbbversion) = $db->query_first("SELECT value FROM bb".$n."_options WHERE varname = 'boardversion'");
 	$check = 0;
-	$error = '';
 	if (stristr($wbbversion, "pl2")) {
 		$wbbversions = explode('pl2', $wbbversion);
 		foreach ($wbbversions as $wbbversions) {
@@ -254,26 +253,30 @@ if (!$step) {
 			}
 		}
 		if ($check != 1) {
-			$error = '<p>';
-			if ($installtype == 'Installation') $error .= 'Die Installation';
-			$error .= 'Das Update';
-			$error .= ' erfordert eine WoltLab Burning Board in der Version '.$do[0]->wbbversion.'!</p>';
-			$error .= '<p>Ihre WBB-Version ist '.$wbbversion.'.</p>';
-			$error .= '<b>Das Script wird daher abgebrochen wird abgebrochen.</b>';
-			diewitherror($error, "Falsche wBB Version");
+print '<p>';
+if ($installtype == 'Installation') print 'Die Installation';
+else print 'Das Update';
+print ' erfordert eine WoltLab Burning Board in der Version '.$do[0]->wbbversion.'!</p>';
+print '<p>Ihre WBB-Version ist '.$wbbversion.'.</p>';
+print '<b>Das Script wird daher abgebrochen wird abgebrochen.</b>';
+print '</td></tr></table></body></html>';
+exit();
 		}
 	}
 	if ($check == 0 && version_compare($wbbversion,$do[0]->wbbversion) < 0) {
-		$error = '<p>';
-		if ($installtype == 'Installation') $error .= 'Die Installation';
-		else $error .= 'Das Update';
-		$error .=' erfordert eine WoltLab Burning Board in der Version '.$do[0]->wbbversion.'!</p>';
-		$error .= '<p>Ihre WBB-Version ist '.$wbbversion.'.</p>';
-		$error .= '<b>Das Script wird daher abgebrochen wird abgebrochen.</b>';
-		diewitherror($error, "Falsche wBB Version");
+print '<p>';
+if ($installtype == 'Installation') print 'Die Installation';
+else print 'Das Update';
+print ' erfordert eine WoltLab Burning Board in der Version '.$do[0]->wbbversion.'!</p>';
+print '<p>Ihre WBB-Version ist '.$wbbversion.'.</p>';
+print '<b>Das Script wird daher abgebrochen wird abgebrochen.</b>';
+print '</td></tr></table></body></html>';
+exit();
 	}
 
-	print $header;
+print '<h2>'.$title.'</h2><br />';
+print $do[0]->description.' f&uuml;r das '.$do[0]->name.' <span class="red">'.$do[0]->version.'</span>!<br /><br />';
+
 	?>
 <tr>
  <td><h3><em style="text-decoration: underline;">Voraussetzungen:</em> <span style="font-size: 75%;">(<a href="<?php echo $filename; ?>">erneut pr&uuml;fen</a>)</span></h3></td>
@@ -285,12 +288,7 @@ if (!$step) {
     <th style="width: 400px">Eigenschaft</th><th style="width: 350px">aktuell</th><th style="width: 150px">empfohlen</th>
    </tr>
    <tr>
-    <td>installiertes BurningBoard</td>
-	<td><span class="green"><b><?php print $wbbversion; ?></b></span></td>
-	<td><?php echo $do[0]->wbbversion; ?></td>
-   </tr>
-   <tr>
-    <td>Alle ben&ouml;tigten Dateien vorhanden?<br /><small>(Diese Dateien werden alle zum richtigen Funktionieren des Hacks ben&ouml;tigt.)</small></td><td>
+    <td>Alle ben&ouml;tigten Datein vorhanden?<br /><small>(Diese Datein werden alle zum richtigen Funktionieren des Hacks ben&ouml;tigt.)</small></td><td>
 	 <?php
 	 $files = array();
 	 $files = explode(',',$do[1]->filename);
@@ -301,7 +299,7 @@ if (!$step) {
 		}
 	 }
 	 if ($error == '') echo '<span class="green"><b>Ja</b></span>';
-	 else echo '<ul> ' .$error . '</ul><span class="red">nicht vorhanden.</span><br />Lade diese Dateien entsprechend ihrer Ordnung hoch';
+else echo '<ul> ' .$error . '</ul><span class="red">nicht vorhanden.</span><br />Lade diese Datein entsprechend ihrer Ordnung hoch';
 	 ?>
 	</td>
 	<td>Ja </td>
@@ -309,9 +307,21 @@ if (!$step) {
   </table>
   <?php
 	$fehlt = '';
-	if ($do[0]->sqlfile != '' && !is_file($do[0]->sqlfile))	$fehlt .='<b class="red">Datei '.$do[0]->sqlfile.' fehlt im acp Ordner!</b><br />';
-	if ($do[0]->lngfile != '' && !is_file($do[0]->lngfile))	$fehlt .='<b class="red">Datei '.$do[0]->lngfile.' fehlt im acp Ordner!</b><br />';
-	if ($do[0]->wbbfile != '' && !is_file($do[0]->wbbfile)) $fehlt .='<b class="red">Datei '.$do[0]->wbbfile.' fehlt im acp Ordner!</b><br />';
+if ($do[0]->sqlfile != '' && !is_file($do[0]->sqlfile)){
+$fehlt .='<b class="red">Datei '.$do[0]->sqlfile.' fehlt im acp Ordner!</b><br />';
+}
+
+if ($do[0]->lngfile != '' && !is_file($do[0]->lngfile)){
+$fehlt .='<b class="red">Datei '.$do[0]->lngfile.' fehlt im acp Ordner!</b><br />';
+}
+
+if ($do[0]->wbbfile != '' && !is_file($do[0]->wbbfile)){
+$fehlt .='<b class="red">Datei '.$do[0]->wbbfile.' fehlt im acp Ordner!</b><br />';
+}
+
+if ($do[0]->stylefile != '' && !is_file($do[0]->stylefile)){
+$fehlt .='<b class="red">Datei '.$do[0]->stylefile.' fehlt im acp Ordner!</b><br />';
+}
 
 	if ($fehlt != '') {
 		print '<h3><u>Fehlermeldung!</u></h3>';
@@ -325,19 +335,14 @@ if (!$step) {
 	if ($installtype == 'Installation') print 'Die Installation';
 	else print 'Das Update';
 	print ' kann nun beginnen!</b><br /><br />';
-	if ($do[0]->license != '') {
-		print '<form id="agreeform" method="post" action="setup.php?step=1">
-		<input name="agreecheck" id="agreecheck" type="checkbox" onclick="enabledl()" /> <label for="agreecheck">Ich bin mit den folgenden Lizenzbestimmungen einverstanden:</label> <a href="'.$do[0]->license.'">'.$do[0]->license.'</a><br />';
-		print '<input class="button" id="startbutton" type="submit" disabled="disabled" value="Installation Beginnen &raquo;&raquo;" /></form>';
-	}
-	else print '<b><a href="./'.$filename.'?step=1" style="color:#090">Beginnen</a></b><br /><br />';
+print '<b><a href="./setup.php?step=1" style="color:#090">Beginnen</a></b><br /><br />';
 	print '</td></tr></table></body></html>';
-	exit();
+print '<ol>';
 }
 
 if ($step == 1) {
-	print $header;
-	print '<ol>';
+print '<h2>'.$title.'</h2><br />';
+print $do[0]->description.' f&uuml;r das '.$do[0]->name.' <span class="red">'.$do[0]->version.'</span>!<br /><br />';
 
 	if ($do[0]->sqlfile != '') {
 		require("./lib/class_query.php");
@@ -377,7 +382,7 @@ if ($step == 1) {
 				$where .= ",'".addslashes($cat)."'";
 			}
 			$cats = array();
-			$result = $db->query("SELECT catid,catname FROM bb".$n."_languagecats WHERE catname IN(".wbb_substr($where,1).")");
+$result=$db->query("SELECT catid,catname FROM bb".$n."_languagecats WHERE catname IN(".substr($where,1).")");
 			while ($row = $db->fetch_array($result)) $cats[$row['catname']]=$row['catid'];
 		}
 		foreach( $languagepacks as $languagepackid){
@@ -390,25 +395,14 @@ if ($step == 1) {
 						$showorder++;
 					}
 				}
-				if ($insert_str) $db->unbuffered_query("REPLACE INTO bb".$n."_languages (languagepackid,catid,itemname,item,showorder) VALUES ".wbb_substr($insert_str,1), 1);
+if ($insert_str) $db->unbuffered_query("REPLACE INTO bb".$n."_languages (languagepackid,catid,itemname,item,showorder) VALUES ".substr($insert_str,1), 1);
 				foreach ($cats as $catname=>$catid) updateCache( $languagepackid, $catid );
 			}
 		}
 		print '<li>Das bestehende Sprachpaket wurde aktualisiert</li>';	
 	}
 
-	print '</ol>';
-	if ($do[0]->templates == 1) print '<b><a href="./'.$filename.'?step=2" style="color:#090">weiter</a></b><br /><br />';
-	elseif ($do[0]->templates == 0 && $do[0]->acptemplates == 1) print '<b><a href="./'.$filename.'?step=3" style="color:#090">weiter</a></b><br /><br />';
-	else print '<b><a href="./'.$filename.'?step=4" style="color:#090">weiter</a></b><br /><br />';
-	print '</td></tr></table></body></html>';
-	exit();
-}
-
-if ($step == 2) {
-	print $header;
-	print '<ol>';
-
+if ($do[0]->templates == 1) {
 	//Import from Templates
 	$templatefolder = "./../templates";	
 	$templates = array();
@@ -429,25 +423,16 @@ if ($step == 2) {
 			$db->unbuffered_query("REPLACE INTO bb".$n."_templates (templatepackid,templatename,template) VALUES ('0','".addslashes($templatename)."','".addslashes($template)."')", 1);
 		}
 		updateTemplateStructure();
-		print '<li>Die neuen Templates wurden erfolgreich importiert.</li>';
+print '<li>Die neuen Templates wurden erfolgreich importiert</li>';
 	}
 	//cachen der neuen Templates
 	$message = cacheTemplates();
 	print $message;
-
-	print '</ol>';
-	if ($do[0]->acptemplates == 1) print '<b><a href="./'.$filename.'?step=3" style="color:#090">weiter</a></b><br /><br />';
-	else print '<b><a href="./'.$filename.'?step=4" style="color:#090">weiter</a></b><br /><br />';
-	
-	print '</td></tr></table></body></html>';
-	exit();
 }
 
-if ($step == 3) {
-	print $header;
-	print '<ol>';
+if ($do[0]->acptemplates == 1) {
 	//Cachen der acp-Templates
-	if (isset($_REQUEST['tplname'])) $tplname = wbb_trim($_REQUEST['tplname']);
+if (isset($_REQUEST['tplname'])) $tplname = trim($_REQUEST['tplname']);
 	else $tplname = "";
 		
 	if ($tplname && file_exists()) {
@@ -457,8 +442,8 @@ if ($step == 3) {
 		$templates = array();
 		$handle = opendir("./templates");
 		while ($file = readdir($handle)) {
-			if ($file == ".." || $file == "." || wbb_substr($file, - 3) != "htm") continue;
-			$templates[] = wbb_substr($file, 0, - 1*wbb_strlen(strrchr($file, ".")));
+if ($file == ".." || $file == "." || substr($file, - 3) != "htm") continue;
+$templates[] = substr($file, 0, - 1*strlen(strrchr($file, ".")));
 		}
 		closedir($handle);
 		unset($handle);
@@ -491,23 +476,17 @@ templatename: ".$templatename."
 		@touch("../cache/templates/acp/".$templatename.".php", filemtime("./templates/".$templatename.".htm"));
 	}
 	print '<li>Die acp-Templates worden erfolgreich gecacht.</li>';
-	print '</ol>';
-	print '<b><a href="./'.$filename.'?step=4" style="color:#090">weiter</a></b><br /><br />';
-	print '</td></tr></table></body></html>';
-	exit();
 }
-
-if ($step == 4) {
-	print $header;
-	print '<br /><br />';
+print '</ol>';
 	print '<b style="color: #390">';
 	if ($installtype == 'Installation') print 'Die Installation';
 	else print 'Das Update';
-	print ' der '.$do[0]->name.' ist nun abgeschlossen!<br />Bitte l&ouml;schen Sie die folgenden Dateien:</b>';
+print ' des '.$do[0]->name.' ist nun abgeschlossen!<br />Bitte l&ouml;schen Sie die folgenden Dateien:</b>';
 	print '<ul><li>'.$filename.'</li>';
 	if ($do[0]->sqlfile != '') print '<li>'.$do[0]->sqlfile.'</li>';
 	if ($do[0]->wbbfile != '') print '<li>'.$do[0]->wbbfile.'</li>';
 	if ($do[0]->lngfile != '') print '<li>'.$do[0]->lngfile.'</li>';
+if ($do[0]->stylefile != '') print '<li>'.$do[0]->stylefile.'</li>';
 	print '<li>'.$setupfile.'</li>';
 	print '</ul>vom Server!';
 	print '</td></tr></table></body></html>';
@@ -515,5 +494,4 @@ if ($step == 4) {
     fclose($fp);
     exit();	
 }
-print '</td></tr></table></body></html>';
 ?>

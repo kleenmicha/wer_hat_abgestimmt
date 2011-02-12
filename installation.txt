@@ -3,7 +3,7 @@ Wer hat schon abgestimmt?
 
 Boardversion:	2.3.6pl2
 
-Hackversion:	2.3.1
+Hackversion:	2.4
 
 Originalautor:	Master X
 
@@ -63,7 +63,7 @@ Suche nach:
 
 Und füge DAHINTER folgendes ein:
 --------------------------------
-, allowwhovote='".addslashes($allowwhovote)."'
+, allowwhovote='".intval($allowwhovote)."'
 
 
 Suche:
@@ -172,7 +172,7 @@ Suche nach:
 -----------
 $lang->load('THREAD,MEMBERS
 
-und füge DARUNTER folgendes ein:
+und füge DAHINTER folgendes ein:
 --------------------------------
 ,POLL
 
