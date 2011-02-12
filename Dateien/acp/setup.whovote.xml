@@ -2,18 +2,19 @@
 <install>
 	<installer>
 		<name>Wer hat abgestimmt</name>
-		<title>Grundinstallation</title>
-		<version>2.3</version>
+		<version>2.3.1</version>
 		<wbbversion>2.3.6</wbbversion>
-		<description>Dies ist die Grundinstallation</description>
+		<description>Dies ist die Grundinstallation von</description>
 		<license>http://www.gnu.de/gpl-ger.html</license>
 		<updatefrom></updatefrom>
 		<sqlfile>install.whovote.sql</sqlfile>
 		<wbbfile>install.whovote.wbb</wbbfile>
-		<lngfile>install.whovote.lng</lngfile>	
+		<lngfile>install.whovote.lng</lngfile>
+		<acptemplates>1</acptemplates>
 		<templates>1</templates>
 	</installer>
 	<files>
+		<filename>modules/mod_whovote.php</filename>
 		<filename>templates/thread_whovote.tpl</filename>
 		<filename>templates/thread_whovote_user.tpl</filename>
 		<filename>templates/thread_whovote_userdetail.tpl</filename>

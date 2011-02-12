@@ -1,8 +1,8 @@
 ############################################################################################
 Wer hat schon abgestimmt?
 Boardversion: mind 2.3.6pl2
-Update von Version: 2.2
-Hackversion: 2.3
+Update von Version: 2.3
+Hackversion: 2.3.1
 Originalautor: Master X
 Recodet und ans WBB 2.3.x angepasst von: Agi
 Überarbeitet von:KleenMicha
@@ -29,16 +29,14 @@ Installations-Anleitung:
 ./acp/install.whovote.wbb
 ./acp/install.whovote.xml
 
-    Und aus dem ordner: "./Update von 2.2" lädst du alle Dateien entsprechend ihrer Ordnung hoch
-
+    Und aus dem ordner: "./Update von 2.3" lädst du alle Dateien entsprechend ihrer Ordnung hoch
 
 3.) Nun die setup.php ausführen, über folgenden Link: http://urlzudeinemforum/deinwbbordner/acp/setup.php und befolge die Anweisungen.
 
-4.) Nun die folgenden Dateien bearbeiten:
+4.) Nun die folgende Datei bearbeiten:
 ./acp/board.php
 ./acp/tpl/board_add.htm
 ./acp/tpl/board_edit.htm
-./pollvote.php
 ./thread.php
 
 
@@ -135,39 +133,8 @@ Soweit der Einbau in der Datei: ./acp/tpl/board_edit.htm
 
 
 Öffne die Datei:
-----------------
-pollvote.php
-
-Suche nach:
------------
-$polloptionsids=implode(",",$_POST['polloptionid']);
-$polloptionsids=preg_replace("/[^0-9,]/","",$polloptionsids);
-
-Und ERSETZE es durch folgendes:
--------------------------------
-$polloptionsids = implode(",", intval_array($_POST['polloptionid']));
-
-
-Suche nach:
------------
-,'$polloptionsids'
-
-
-Und ERSETZE es durch folgendes:
--------------------------------
-,'$polloptionsids'
-
-
-Suche und lösche DARUNTER nach:
--------------------------------
-$polloptionsids = implode(",", intval_array($_POST['polloptionid']));
-
-#####################################################################
-Soweit der Einbau in der Datei: ./acp/tpl/board_edit.htm
-
-Öffne die Datei:
-----------------
-pollvote.php
+---------------
+./thread.php
 
 Suche nach:
 -----------
@@ -178,50 +145,17 @@ Und ERSETZE es durch folgendes:
 -------------------------------
 ,'$polloptionsids'
 
-#####################################################################
-Soweit der Einbau in der Datei: ./pollvote.php
 
-Öffne die Datei:
-----------------
-thread.php
+
+Öffne die Datei: thread.php
 
 Suche darunter:
 ---------------
-// ** Wer hat abgestimmt by Agi edit by KleenMicha START ** //
 if ($_REQUEST['action'] == 'who_vote' && $_REQUEST['pollid'] && $wbbuserdata['a_can_view_whovote']) {
-	$pollid = wbb_trim( $_REQUEST['pollid'] );
-	$user_votet = '';
-	$result = $db->query("SELECT v.*, u.username FROM bb".$n."_votes v
-	LEFT JOIN bb".$n."_users u ON (u.userid = v.userid)
-	WHERE id='".intval($pollid)."' ORDER BY userid ASC");
-
-	while ($polls = $db->fetch_array($result)) {
-		$polls['voteid'] = explode(",", $polls['voteid']);
-		foreach ($polls['voteid'] as $polloptionid) {
-			$results = $db->query("SELECT polloption FROM bb".$n."_polloptions WHERE polloptionid='$polloptionid'");
-			while ($polloption = $db->fetch_array($results)) {
-				if ($wbbuserdata['a_can_view_whovote_detailed'] && $polls['userid'] != 0)
-					$user_votet .= ' <a href="profile.php?userid='.$polls['userid'].'">'.$polls['username'].'</a> f&uuml;r <b>'.$polloption['polloption'].'</b><br />';
-				elseif ($polls['userid'] != 0)
-					$user_votet .= ' <a href="profile.php?userid='.$polls['userid'].'">'.$polls['username'].'</a><br />';
-				else 
-					$user_votet .= '';
-			}
-		}
-	}
-	if ($user_votet == '') $user_votet = 'Es wurden keine Bewertungen von Mitgliedern abgegeben';
-	eval("\$tpl->output(\"".$tpl->get("thread_whovote")."\");");
-	exit();
-}
-// ** Wer hat abgestimmt by Agi edit by KleenMicha ENDE ** //
 
 Und ERSETZE es durch folgendes:
 -------------------------------
-// ** Wer hat abgestimmt by Agi edit by KleenMicha START ** //
 if (($_REQUEST['action'] == 'who_vote') && $_REQUEST['pollid'] && $wbbuserdata['a_can_view_whovote'] && ($board['allowwhovote'] == 1 || $showwhovote == 1)) {
-	require_once('./modules/mod_whovote.php');
-}
-// ** Wer hat abgestimmt by Agi edit by KleenMicha ENDE ** //
 
 #####################################################################
 Soweit der Einbau in der Datei: ./thread.php

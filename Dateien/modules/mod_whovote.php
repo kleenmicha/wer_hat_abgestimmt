@@ -1,31 +1,31 @@
 <?php
 /*
-*@titel:			Who Vote (Wer hat abgestimmt)
-*@version:			2.3
-*@autor:			Agi
+*@title:			Who Vote (Wer hat abgestimmt)
+*@version:			2.3.1
+*@author:			Agi
 *@reworked by:		Michael (KleenMicha) Schüler
 *@begin				2006-08-12
-*@last update		2007-09-06
+*@last update		2007-12-14
 *@license			GNU/GPL
 */
 $filename = 'mod_whovote.php';
 
-if (!$_REQUEST['pollid'] || !$wbbuserdata['a_can_view_whovote']) {
+if (!$_REQUEST['pollid'] || !$wbbuserdata['a_can_view_whovote'] && ($board['allowwhovote'] == 1 || $showwhovote == 1)) {
 	die('No Access');
 }
 else $pollid = wbb_trim( $_REQUEST['pollid'] );
 
-$user_votet = '';
+$user_votet	= '';
 
-$perpage = 20;	// Hier kann die Anzahl an Nutzern pro Seite festgelegt werden, je mehr Benutzer, desto mehr Datenbankabfragen gibt es
+$perpage	= 20;	// Hier kann die Anzahl an Nutzern pro Seite festgelegt werden, je mehr Benutzer, desto mehr Datenbankabfragen gibt es
 
-$guestview = 1;	// Sollen Gäste mit angezeigt werden?
+$guestview	= 1;	// Sollen Gäste mit angezeigt werden? (1=Ja / 0=Nein)
 
-list($votecount) = $db->query_first("SELECT count(id) FROM bb".$n."_votes WHERE id='".intval($pollid)."'");
+list($votecount) = $db->query_first("SELECT count(id) FROM bb".$n."_votes WHERE id='".(int) $pollid."'");
 
 if (!isset($_GET['page']) || $_GET['page'] == "") $page = 1;
 else $page = (int) $_GET['page'];
-if (isset($_REQUEST['ordermode']) && !empty($_REQUEST['ordermode'])) $ordermode = wbb_trim($_REQUEST['ordermode']);
+if (isset($_REQUEST['ordermode']) && !empty($_REQUEST['ordermode'])) $ordermode = wbb_trim( $_REQUEST['ordermode'] );
 else $ordermode = 1;
 
 $pages = ceil($votecount / $perpage);
@@ -40,7 +40,7 @@ switch ($ordermode) {
 
 $result = $db->query("SELECT v.*, u.username FROM bb".$n."_votes v
 LEFT JOIN bb".$n."_users u ON (u.userid = v.userid)
-WHERE id='".intval($pollid)."'$mode", $perpage, $perpage * ($page - 1));
+WHERE id='".(int) $pollid."'$mode", $perpage, $perpage * ($page - 1));
 
 $count = (($ordermode) ? (($page-1)*$perpage) : ($votecount +1 - ($page-1)*$perpage));
 
@@ -49,18 +49,18 @@ while ($polls = $db->fetch_array($result)) {
 	foreach ($polls['voteid'] as $polloptionid) {
 		$results = $db->query("SELECT polloption FROM bb".$n."_polloptions WHERE polloptionid='$polloptionid'");
 		while ($polloption = $db->fetch_array($results)) {
-			if ($polls['userid'] == 0 && $guestview == 1) $polls['userdata'] = 'Gast';
-			else $polls['userdata'] = '<a href="profile.php?userid='.$polls['userid'].'">'.$polls['username'].'</a>';
+			if ($polls['userid'] == 0 && $guestview == 1) $polls['userdata'] = $lang->get('LANG_POLL_GUEST');
+			else $polls['userdata'] = '<a href="profile.php?userid='.$polls['userid'].$SID_ARG_2ND.'">'.$polls['username'].'</a>';
 
 			if ($ordermode == 1) $count++;
-			else $count -- ;
+			else $count--;
 			if ($count % 2) $tdclass = 'tablea';
 			else $tdclass = 'tableb';
 
 			if ($wbbuserdata['a_can_view_whovote_detailed'])
 				eval("\$user_votet .= \"".$tpl->get("thread_whovote_userdetail")."\";");
 			else
-				eval("\$user_votet .= \"".$tpl->get("thread_whovote_user")."\";");
+				eval("\$user_votet .= \"".$tpl->get("thread_whovote_user")."\";");		
 		}
 	}
 }

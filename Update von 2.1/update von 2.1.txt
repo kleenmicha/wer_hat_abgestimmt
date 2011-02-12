@@ -6,7 +6,7 @@ Hackversion: 2.3
 Originalautor: Master X
 Recodet und ans WBB 2.3.x angepasst von: Agi
 Überarbeitet von: KleenMicha
-Copyright: GNU GPL (http://www.gnu.de/gpl-ger.html)
+Copyright: GNU GPL Version 3 (Lizens liegt bei)
 ############################################################################################
 
 
@@ -26,6 +26,7 @@ Installations-Anleitung:
 2.) Lade alle Dateien entsprechend ihrer Ordner aus dem Ordner: ./Dateien hoch bis auf:
 ./acp/install.whovote.lng
 ./acp/install.whovote.sql
+./acp/install.whovote.wbb
 ./acp/install.whovote.xml
 
     Und aus dem ordner: "./Update von 2.1" lädst du alle Dateien entsprechend ihrer Ordnung hoch
@@ -34,11 +35,108 @@ Installations-Anleitung:
 3.) Nun die setup.php ausführen, über folgenden Link: http://urlzudeinemforum/deinwbbordner/acp/setup.php und befolge die Anweisungen.
 
 4.) Nun die folgenden Dateien bearbeiten:
+./acp/board.php
+./acp/tpl/board_add.htm
+./acp/tpl/board_edit.htm
 ./pollvote.php
 ./thread.php
 
 
-Öffne die Datei: pollvote.php
+Öffne die Datei:
+----------------
+./acp/board.php
+
+Suche:
+------
+,showinarchive,externalurl
+
+
+Und füge DAHINTER folgendes ein:
+--------------------------------
+,allowwhovote
+
+
+Suche:
+------
+'".intval($showinarchive)."','".addslashes($externalurl)."'
+
+Und füge DAHINTER folgendes ein:
+--------------------------------
+,'".intval($allowwhovote)."'
+
+
+Suche nach:
+-----------
+, externalurl='".addslashes($externalurl)."'
+
+Und füge DAHINTER folgendes ein:
+--------------------------------
+, allowwhovote='".addslashes($allowwhovote)."'
+
+
+Suche:
+------
+$sel_posttemplateuse[$board['posttemplateuse']] = " selected=\"selected\"";
+
+Und füge DARUNTER folgendes ein:
+--------------------------------
+$sel_allowwhovote[$board['allowwhovote']] = " selected=\"selected\"";
+
+#####################################################################
+Soweit der Einbau in der Datei: ./acp/board.php
+
+
+Öffne die Datei:
+----------------
+./acp/tpl/board_add.htm
+
+Suche:
+------
+<tr class="tblsection">
+ <td colspan="2">{$lang->items['LANG_ACP_BOARD_MODERATION']}</td>
+</tr>
+
+Und füge DARÜBER folgendes ein:
+-------------------------------
+<tr class="secondrow">
+ <td><b>{$lang->items['LANG_ACP_BOARD_WHOVOTE']}</b><br />{$lang->items['LANG_ACP_BOARD_WHOVOTE_DESC']}</td>
+ <td><select name="allowwhovote">
+  <option value="1">{$lang->items['LANG_ACP_GLOBAL_YES']}</option>
+  <option value="0" selected="selected">{$lang->items['LANG_ACP_GLOBAL_NO']}</option>
+ </select></td>
+</tr>
+
+#####################################################################
+Soweit der Einbau in der Datei: ./acp/tpl/board_add.htm
+
+
+Öffne die Datei:
+----------------
+./acp/tpl/board_edit.htm
+
+Suche:
+------
+<tr class="tblsection">
+ <td colspan="2">{$lang->items['LANG_ACP_BOARD_MODERATION']}</td>
+</tr>
+
+Und füge DARÜBER folgendes ein:
+-------------------------------
+<tr class="secondrow">
+ <td><b>{$lang->items['LANG_ACP_BOARD_WHOVOTE']}</b><br />{$lang->items['LANG_ACP_BOARD_WHOVOTE_DESC']}</td>
+ <td><select name="allowwhovote">
+  <option value="1"$sel_allowwhovote[1]>{$lang->items['LANG_ACP_GLOBAL_YES']}</option>
+  <option value="0"$sel_allowwhovote[0]>{$lang->items['LANG_ACP_GLOBAL_NO']}</option>
+ </select></td>
+</tr>
+
+#####################################################################
+Soweit der Einbau in der Datei: ./acp/tpl/board_edit.htm
+
+
+Öffne die Datei:
+----------------
+pollvote.php
 
 Suche nach:
 -----------
@@ -64,9 +162,12 @@ Suche und lösche DARUNTER nach:
 -------------------------------
 $polloptionsids = implode(",", intval_array($_POST['polloptionid']));
 
+#####################################################################
+Soweit der Einbau in der Datei: ./acp/tpl/board_edit.htm
 
-
-Öffne die Datei: thread.php
+Öffne die Datei:
+----------------
+thread.php
 
 Suche nach:
 -----------
@@ -84,7 +185,7 @@ if ((!isset($postid) && !isset($threadid)) || $thread['closed'] == 3) error($lan
 Und füge DARÜBER folgendes ein:
 -------------------------------
 // ** Wer hat abgestimmt by Agi edit by KleenMicha START ** //
-if ($_REQUEST['action'] == 'who_vote' && $_REQUEST['pollid'] && $wbbuserdata['a_can_view_whovote']) {
+if (($_REQUEST['action'] == 'who_vote') && $_REQUEST['pollid'] && $wbbuserdata['a_can_view_whovote'] && ($board['allowwhovote'] == 1 || $showwhovote == 1)) {
 	require_once('./modules/mod_whovote.php');
 }
 // ** Wer hat abgestimmt by Agi edit by KleenMicha ENDE ** //
@@ -124,6 +225,8 @@ $result1=$db->unbuffered_query("SELECT * FROM bb".$n."_votes WHERE voteid='$row[
    }
 // ** Wer hat abgestimmt by Agi ENDE ** //
 
+#####################################################################
+Soweit der Einbau in der Datei: ./thread.php
 
 5. Nun die folgenden Templates bearbeiten:
 ------------------------------------------
@@ -170,18 +273,18 @@ Suche nach:
 
 Und ERSETZE es durch folgendes:
 -------------------------------
-<if($totalvotes != "0" && $wbbuserdata['a_can_view_whovote'])><then>
+<if($totalvotes != 0 && $wbbuserdata['a_can_view_whovote'] && ($board['allowwhovote'] == 1 || $showwhovote == 1))><then>
  <tr>
   <td class="tabletitle" style="width:100%" colspan="4" align="center"><span class="smallfont"><a href="javascript:whovote($thread[pollid])"><b>{$lang->items['LANG_THREAD_POLL_USER_VOTET']}</a></b></span></td>
  </tr>
 </then></if>
-
-
 6.) Forum wieder online schalten
 
 Fertig
 
 Gebrauchsanweisung:
 ===================
+
+Setze entweder für das gesamte Forum, oder einzelne Bereiche diese Funktion auf aktiv.
 
 Setze für die unterschiedlichen Gruppen die "Benutzerrechte" zum Sehen wer abgestimmt hat.

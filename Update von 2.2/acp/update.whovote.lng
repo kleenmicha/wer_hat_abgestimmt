@@ -14,14 +14,7 @@
 
 [poll]
 
-<text:LANG_POLL_GUEST>Gast</LANG_POLL_GUEST:text>
 <text:LANG_POLL_OPTION>Umfrageoption</LANG_POLL_OPTION:text>
 <text:LANG_POLL_SORTASC>aufw&auml;rts sortieren</LANG_POLL_SORTASC:text>
 <text:LANG_POLL_SORTDESC>abw&auml;rts sortieren</LANG_POLL_SORTDESC:text>
 <text:LANG_POLL_USERNAME>Benutzername</LANG_POLL_USERNAME:text>
-
-
-
-[thread]
-
-<text:LANG_THREAD_POLL_USER_VOTET>Diese Mitglieder haben bereits abgestimmt</LANG_THREAD_POLL_USER_VOTET:text>

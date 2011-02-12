@@ -1,0 +1,13 @@
+# Languagepack-Export: Deutsch (export)
+# Languagecode: de
+# Date: 01.06.2006 01:20
+# wBB Version: 2.3.4
+
+
+
+[poll]
+
+<text:LANG_POLL_OPTION>Umfrageoption</LANG_POLL_OPTION:text>
+<text:LANG_POLL_SORTASC>aufw&auml;rts sortieren</LANG_POLL_SORTASC:text>
+<text:LANG_POLL_SORTDESC>abw&auml;rts sortieren</LANG_POLL_SORTDESC:text>
+<text:LANG_POLL_USERNAME>Benutzername</LANG_POLL_USERNAME:text>

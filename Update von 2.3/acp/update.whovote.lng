@@ -1,0 +1,11 @@
+# Languagepack-Export: Deutsch (export)
+# Languagecode: de
+# Date: 01.06.2006 01:20
+# wBB Version: 2.3.4
+
+
+
+[acp_board]
+
+<text:LANG_ACP_BOARD_WHOVOTE_DESC>Soll die Anzeige, wer Abgestimmt hat aktiviert sein?</LANG_ACP_BOARD_WHOVOTE_DESC:text>
+<text:LANG_ACP_BOARD_WHOVOTE_DESC>Wenn diese Funktion aktiviert ist, ist es m&ouml;glich, sofern man die Benutzerrechte hat, zu sehen wer abgestimmt hat, in diesem Forum.</LANG_ACP_BOARD_WHOVOTE_DESC:text>

@@ -2,13 +2,13 @@
 <install>
 	<installer>
 		<name>Wer hat abgestimmt</name>
-		<title>Grundinstallation</title>
-		<version>2.3</version>
+		<version>2.3.1</version>
 		<wbbversion>2.3.6</wbbversion>
-		<description>Dies ist die Grundinstallation</description>
+		<description>Dies ist das Update von: </description>
 		<updatefrom>2.1</updatefrom>
-		<sqlfile>install.whovote.sql</sqlfile>
-		<lngfile>update21.whovote.lng</lngfile>
+		<sqlfile>update.whovote.sql</sqlfile>
+		<wbbfile>update.whovote.wbb</wbbfile>
+		<lngfile>update.whovote.lng</lngfile>
 	</installer>
 	<files>
 		<filename>templates/thread_whovote.tpl</filename>

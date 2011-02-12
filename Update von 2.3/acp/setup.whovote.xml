@@ -5,14 +5,12 @@
 		<version>2.3.1</version>
 		<wbbversion>2.3.6</wbbversion>
 		<description>Dies ist das Update von: </description>
-		<updatefrom>2.2</updatefrom>
+		<updatefrom>2.3</updatefrom>
 		<sqlfile>update.whovote.sql</sqlfile>
 		<wbbfile>update.whovote.wbb</wbbfile>
 		<lngfile>update.whovote.lng</lngfile>
 	</installer>
 	<files>
-		<filename>templates/thread_whovote.tpl</filename>
-		<filename>templates/thread_whovote_user.tpl</filename>
-		<filename>templates/thread_whovote_userdetail.tpl</filename>
+		<filename></filename>
 	</files>
 </install>

@@ -170,7 +170,6 @@ if(isset($_REQUEST['step'])) $step = intval($_REQUEST['step']);
 else $step = 0;
 
 $do = readingXML($setupfile);
-$title = $do[0]->title;
 if ($do[0]->updatefrom == '' ) $installtype = 'Installation';
 else $installtype  = 'Update';
 
@@ -178,7 +177,7 @@ $header = '<?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="de" xml:lang="de">
 <head><meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-<title>'.$title.'</title>
+<title>'.$do[0]->name.'</title>
 <style type="text/css">
 body {
  color: #000;
@@ -222,7 +221,7 @@ ul {
  list-style-type: none;
  padding: 5px;
  margin: 10px 0 10px 0;
- border: 1px solid #f00;
+ border: 1px solid #F00;
  color: #E36363;
 }
 </style>
@@ -238,7 +237,7 @@ ul {
   <tr>
    <td width="100%" align="left">';
    
-	$header .= '<h2>'.$title.'</h2><br />';
+	$header .= '<h2>'.$do[0]->name.'</h2><br />';
 	$header .= $do[0]->description.' '.$do[0]->name.' <span class="red">'.$do[0]->version.'</span>!<br /><br />';
 
 if (!$step) {
@@ -291,7 +290,7 @@ if (!$step) {
 	<td><?php echo $do[0]->wbbversion; ?></td>
    </tr>
    <tr>
-    <td>Alle ben&ouml;tigten Datein vorhanden?<br /><small>(Diese Datein werden alle zum richtigen Funktionieren des Hacks ben&ouml;tigt.)</small></td><td>
+    <td>Alle ben&ouml;tigten Dateien vorhanden?<br /><small>(Diese Dateien werden alle zum richtigen Funktionieren des Hacks ben&ouml;tigt.)</small></td><td>
 	 <?php
 	 $files = array();
 	 $files = explode(',',$do[1]->filename);
@@ -302,7 +301,7 @@ if (!$step) {
 		}
 	 }
 	 if ($error == '') echo '<span class="green"><b>Ja</b></span>';
-	 else echo '<ul> ' .$error . '</ul><span class="red">nicht vorhanden.</span><br />Lade diese Datein entsprechend ihrer Ordnung hoch';
+	 else echo '<ul> ' .$error . '</ul><span class="red">nicht vorhanden.</span><br />Lade diese Dateien entsprechend ihrer Ordnung hoch';
 	 ?>
 	</td>
 	<td>Ja </td>
@@ -328,8 +327,8 @@ if (!$step) {
 	print ' kann nun beginnen!</b><br /><br />';
 	if ($do[0]->license != '') {
 		print '<form id="agreeform" method="post" action="setup.php?step=1">
-		<input name="agreecheck" type="checkbox" onclick="enabledl()" /><strong> Ich bin mit den folgenden Lizenzbestimmungen einverstanden:</strong> <a href="'.$do[0]->license.'">'.$do[0]->license.'</a><br />';
-		print '<input class="button" id="startbutton" type="submit" disabled="disabled" value="Beginnen" /></form>';
+		<input name="agreecheck" id="agreecheck" type="checkbox" onclick="enabledl()" /> <label for="agreecheck">Ich bin mit den folgenden Lizenzbestimmungen einverstanden:</label> <a href="'.$do[0]->license.'">'.$do[0]->license.'</a><br />';
+		print '<input class="button" id="startbutton" type="submit" disabled="disabled" value="Installation Beginnen &raquo;&raquo;" /></form>';
 	}
 	else print '<b><a href="./'.$filename.'?step=1" style="color:#090">Beginnen</a></b><br /><br />';
 	print '</td></tr></table></body></html>';

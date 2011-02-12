@@ -1,0 +1,9 @@
+<wBBoption>
+	<name>showwhovote</name>
+	<group>thread</group>
+	<value>0</value>
+	<type>truefalse</type>
+	<title>Soll die Anzeige, wer abgestimmt hat gobal aktiviert sein?</title>
+	<desc>Aktiviere diesen Punkt die Funktion, sofern die Benutzerrechte gegeben sind &uuml;berall zu aktivieren.</desc>
+	<acpmode>1</acpmode>
+</wBBoption>
