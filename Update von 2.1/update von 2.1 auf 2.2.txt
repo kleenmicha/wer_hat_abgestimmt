@@ -1,0 +1,209 @@
+############################################################################################
+Wer hat schon abgestimmt?
+Boardversion: mind 2.3.6pl2
+Update von Version: 2.1
+Hackversion: 2.2
+Originalautor: Master X
+Recodet und ans WBB 2.3.x angepasst von: Agi
+Überarbeitet von:KleenMicha
+Copyright: Liegt bei Master X und darf in keinster Weise ENTFERNT oder VERÄNDERT werden!
+Sonstige Infos: Kann auf großen Boards sehr sehr lang werden die Auflistung, also nichts
+                für User mit nem schwachen Internet. Problem wird aber in Version 3.0
+                behoben werden. Siehe unten
+Bugs: - Fehlendes Copyright hinzugefügt
+      - Sprachvariablen korrgiert
+      - setup.php korrigiert
+      - Gäste werden nicht länger angezeigt
+############################################################################################
+
+
+BESCHREIBUNG:
+############################################################################################
+Dieser Hack zeigt an, wer bei Umfragen bereits abgestimmt hat. Hat die Benutzergruppe das 
+Recht, das Forum im Offlinemodus sehen zu dürfen, kann diese zusätzlich sehen, wer
+wofür gestimmt hat
+############################################################################################
+
+
+Installations-Anleitung:
+=======================
+
+1.) Schalte dein Board in den Offline-Modus!
+
+2.) Lade alle Dateien entsprechend ihrer Ordner aus dem Ordner: ./Dateien hoch bis auf:
+./acp/install.whovote.lng
+./acp/install.whovote.sql
+./acp/install.whovote.xml
+
+    Und aus dem ordner: "./Update von 2.1" lädst du alle Dateien entsprechend ihrer Ordnung hoch
+
+
+3.) Nun die setup.php ausführen, über folgenden Link: http://urlzudeinemforum/deinwbbordner/acp/setup.php und befolge die Anweisungen.
+
+4.) Nun die folgenden Dateien bearbeiten:
+./pollvote.php
+./thread.php
+
+
+Öffne die Datei: pollvote.php
+
+Suche nach:
+-----------
+$polloptionsids=implode(",",$_POST['polloptionid']);
+$polloptionsids=preg_replace("/[^0-9,]/","",$polloptionsids);
+
+Und ERSETZE es durch folgendes:
+-------------------------------
+$polloptionsids = implode(",", intval_array($_POST['polloptionid']));
+
+
+Suche und lösche DARUNTER nach:
+-------------------------------
+$polloptionsids = implode(",", intval_array($_POST['polloptionid']));
+
+
+
+Öffne die Datei: thread.php
+
+Suche nach:
+-----------
+$lang->load('THREAD,MEMBERS
+
+und füge DARUNTER folgendes ein:
+--------------------------------
+,POLL
+
+
+Suche darunter:
+---------------
+if ((!isset($postid) && !isset($threadid)) || $thread['closed'] == 3) error($lang->get("LANG_GLOBAL_ERROR_FALSELINK", array('$adminmail' => $adminmail)));
+
+Und füge DARÜBER folgendes ein:
+-------------------------------
+// ** Wer hat abgestimmt by Agi edit by KleenMicha START ** //
+if ($_REQUEST['action'] == 'who_vote' && $_REQUEST['pollid'] && $wbbuserdata['a_can_view_whovote']) {
+	$pollid = wbb_trim( $_REQUEST['pollid'] );
+	$user_votet = '';
+	$result = $db->query("SELECT v.*, u.username FROM bb".$n."_votes v
+	LEFT JOIN bb".$n."_users u ON (u.userid = v.userid)
+	WHERE id='".intval($pollid)."' ORDER BY userid ASC");
+
+	while ($polls = $db->fetch_array($result)) {
+		$polls['voteid'] = explode(",", $polls['voteid']);
+		foreach ($polls['voteid'] as $polloptionid) {
+			$results = $db->query("SELECT polloption FROM bb".$n."_polloptions WHERE polloptionid='$polloptionid'");
+			while ($polloption = $db->fetch_array($results)) {
+				if ($wbbuserdata['a_can_view_whovote_detailed'] && $polls['userid'] != 0)
+					$user_votet .= ' <a href="profile.php?userid='.$polls['userid'].'">'.$polls['username'].'</a> f&uuml;r <b>'.$polloption['polloption'].'</b><br />';
+				elseif ($polls['userid'] != 0)
+					$user_votet .= ' <a href="profile.php?userid='.$polls['userid'].'">'.$polls['username'].'</a><br />';
+				else 
+					$user_votet .= '';
+			}
+		}
+	}
+	if ($user_votet == '') $user_votet = 'Es wurden keine Bewertungen von Mitgliedern abgegeben';
+	eval("\$tpl->output(\"".$tpl->get("thread_whovote")."\");");
+	exit();
+}
+// ** Wer hat abgestimmt by Agi edit by KleenMicha ENDE ** //
+
+
+Suche und lösche folgendes:
+---------------------------
+// ** Wer hat abgestimmt by Agi START ** //
+$result1=$db->unbuffered_query("SELECT * FROM bb".$n."_votes WHERE voteid='$row[polloptionid]' ORDER BY userid ASC");
+   while($row1=$db->fetch_array($result1)) {
+    $result2=$db->unbuffered_query("SELECT username FROM bb".$n."_users WHERE userid='".$row1['userid']."'");
+    $row2=$db->fetch_array($result2);
+    if($user_votet == "") {
+     if(checkmodpermissions("can_view_off_board") && $row1['userid'] != 0) {
+      $user_votet .= " ".$row2['username']." für <b>[".$row['polloption']."]</b><br />";
+     } else {
+      $user_votet .= " ".$row2['username']."<br />";
+     } 
+     if(checkmodpermissions("can_view_off_board") && $row1['userid'] == 0) {
+     $user_votet .= "";
+     }
+
+
+    } else {
+     if(checkmodpermissions("can_view_off_board") && $row1['userid'] != 0) {
+      $user_votet .= " ".$row2['username']." für <b>[".$row['polloption']."]</b><br />";
+     } else {
+      $user_votet .= " ".$row2['username']."<br />";
+     } 
+     if(checkmodpermissions("can_view_off_board") && $row1['userid'] == 0) {
+     $user_votet .= "";
+     }
+
+
+	
+    }
+   }
+// ** Wer hat abgestimmt by Agi ENDE ** //
+
+
+5. Nun die folgenden Templates bearbeiten:
+------------------------------------------
+thread
+thread_poll_result
+
+
+Öffne das Template: thread
+
+Suche nach:
+-----------
+function rating(userid) {
+ window.open("misc.php?action=userrating&userid="+userid+"{$SID_ARG_2ND_UN}", "moo", "toolbar=no,scrollbars=yes,resizable=yes,width=350,height=205");
+}
+
+Und füge darunter folgendes ein:
+--------------------------------
+function whovote(pollid) {
+ window.open("thread.php?action=who_vote&pollid="+pollid+"{$SID_ARG_2ND_UN}", "moo", "toolbar=no,scrollbars=yes,resizable=yes,width=320,height=350");
+}
+
+
+Öffne das Template: thread_poll_result.tpl
+
+Suche nach:
+-----------
+
+<if(!$totalvotes == "0")><then>
+<br />
+<table cellpadding="{$style['tableincellpadding']}" cellspacing="{$style['tableincellspacing']}" border="{$style['tableinborder']}" style="width:{$style['tableinwidth']}" class="tableinborder">
+ <tr>
+  <td class="tabletitle" style="width:100%" colspan="2" align="left"><center><span class="normalfont"><b>{$lang->items['LANG_THREAD_POLL_USER_VOTET']}</b></span></center></td>
+ </tr>
+ <tr>
+  <td class="tablea" style="width:100%" colspan="2" align="left"><div align="center"><span class="normalfont">$user_votet</span></div></td>
+ </tr>
+ <tr>	
+  <td class="tabletitle" colspan="2" align="center"><span class="normalfont">&nbsp;{$lang->items['LANG_THREAD_POLL_USER_VOTET_COPYRIGHT']}</span></td>
+ </tr>
+</table>
+<br />
+</then></if>
+
+
+Und ERSETZE es durch folgendes:
+-------------------------------
+<if($totalvotes != "0" && $wbbuserdata['a_can_view_whovote'])><then>
+ <tr>
+  <td class="tabletitle" style="width:100%" colspan="4" align="center"><span class="smallfont"><a href="javascript:whovote($thread[pollid])"><b>{$lang->items['LANG_THREAD_POLL_USER_VOTET']}</a></b></span></td>
+ </tr>
+</then></if>
+
+
+
+6.) Importiere im acp->Templates importieren das neue Template und vergess das Cachen dessen nicht
+
+7.) Forum wieder online schalten
+
+Fertig
+
+Gebrauchsanweisung:
+===================
+
+Setze für die unterschiedlichen Gruppen die "Benutzerrechte" zum Sehen wer abgestimmt hat.

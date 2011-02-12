@@ -1,0 +1,19 @@
+<wBBgroupvariable>
+	<name>a_can_view_whovote</name>
+	<type>truefalse</type>
+	<defaultvalue>0</defaultvalue>
+	<title>Darf sehen wer abgestimmt hat?</title>
+	<desc>D&uuml;rfen Mitglieder dieser Gruppe sehen Wer abgestimmt hat?</desc>
+	<group>USER_GENERAL</group>
+	<acpmode>2</acpmode>
+</wBBgroupvariable>
+<wBBgroupvariable>
+	<name>a_can_view_whovote_detailed</name>
+	<type>truefalse</type>
+	<defaultvalue>0</defaultvalue>
+	<title>Darf sehen wer wof&uuml;r abgestimmt hat?</title>
+	<desc>D&uuml;rfen Mitglieder dieser Gruppe sehen Wer wof&uuml;r abgestimmt hat?<br />
+<span style="color: red">Ist dieses Recht aktiviert <b>MUSS</b> auch <i>&quot;Darf sehen wer abgestimmt hat?&quot;</i> aktiviert sein.</span></desc>
+	<group>USER_GENERAL</group>
+	<acpmode>2</acpmode>
+</wBBgroupvariable>

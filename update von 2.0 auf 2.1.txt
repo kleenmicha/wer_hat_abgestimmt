@@ -1,0 +1,127 @@
+############################################################################################
+Wer hat schon abgestmmt
+UPDATE von Version 2.0 auf 2.1
+############################################################################################
+
+############################################################################################
+Wer die alte Version 2.0 bereits installiert hat, den bitte ich, diesen Anweisungen hier
+zu folgen
+############################################################################################
+
+
+############################################################################################
+START
+############################################################################################
+
+thread_poll_result.tpl
+############################################################################################
+
+Suche nach:
+
+<if(!$totalvotes == "0")><then>
+<br />
+<table cellpadding="{$style['tableincellpadding']}" cellspacing="{$style['tableincellspacing']}" border="{$style['tableinborder']}" style="width:{$style['tableinwidth']}" class="tableinborder">
+ <tr>
+  <td class="tabletitle" style="width:100%" colspan="2" align="left"><center><span class="normalfont"><b>{$lang->items['LANG_THREAD_POLL_USER_VOTET']}</b></span></center></td>
+ </tr>
+ <tr>
+  <td class="tablea" style="width:100%" colspan="2" align="left"><div align="center"><span class="normalfont">$user_votet</span></div></td>
+ </tr>
+ <tr>	
+  <td class="tabletitle" colspan="2" align="center"><span class="normalfont">&nbsp;</span></td>
+ </tr>
+</table>
+<br />
+</then></if>
+
+
+Und ersetze gegen:
+
+<if(!$totalvotes == "0")><then>
+<br />
+<table cellpadding="{$style['tableincellpadding']}" cellspacing="{$style['tableincellspacing']}" border="{$style['tableinborder']}" style="width:{$style['tableinwidth']}" class="tableinborder">
+ <tr>
+  <td class="tabletitle" style="width:100%" colspan="2" align="left"><center><span class="normalfont"><b>{$lang->items['LANG_THREAD_POLL_USER_VOTET']}</b></span></center></td>
+ </tr>
+ <tr>
+  <td class="tablea" style="width:100%" colspan="2" align="left"><div align="center"><span class="normalfont">$user_votet</span></div></td>
+ </tr>
+ <tr>	
+  <td class="tabletitle" colspan="2" align="center"><span class="normalfont">&nbsp;{$lang->items['LANG_THREAD_POLL_USER_VOTET_COPYRIGHT']}</span></td>
+ </tr>
+</table>
+<br />
+</then></if>
+
+
+
+thread.php
+############################################################################################
+
+Suche nach:
+
+// Wer hat abgestimmt V2
+$result1=$db->unbuffered_query("SELECT * FROM bb".$n."_votes WHERE voteid='$row[polloptionid]' ORDER BY userid ASC");
+   while($row1=$db->fetch_array($result1)) {
+    $result2=$db->unbuffered_query("SELECT username FROM bb".$n."_users WHERE userid='".$row1['userid']."'");
+    $row2=$db->fetch_array($result2);
+    if($user_votet == "") {
+     if(checkmodpermissions("can_view_off_board")) {
+      $user_votet .= " ".$row2['username']." für <b>[".$row['polloption']."]</b><br />";
+     } else {
+      $user_votet .= " ".$row2['username']."<br />";
+     } 
+
+    } else {
+     if(checkmodpermissions("can_view_off_board")) {
+      $user_votet .= " ".$row2['username']." für <b>[".$row['polloption']."]</b><br />";
+     } else {
+      $user_votet .= " ".$row2['username']."<br />";
+     } 
+
+	
+    }
+   }
+
+
+Und ersetze gegen:
+
+// ** Wer hat abgestimmt by Agi START ** //
+$result1=$db->unbuffered_query("SELECT * FROM bb".$n."_votes WHERE voteid='$row[polloptionid]' ORDER BY userid ASC");
+   while($row1=$db->fetch_array($result1)) {
+    $result2=$db->unbuffered_query("SELECT username FROM bb".$n."_users WHERE userid='".$row1['userid']."'");
+    $row2=$db->fetch_array($result2);
+    if($user_votet == "") {
+     if(checkmodpermissions("can_view_off_board") && $row1['userid'] != 0) {
+      $user_votet .= " ".$row2['username']." für <b>[".$row['polloption']."]</b><br />";
+     } else {
+      $user_votet .= " ".$row2['username']."<br />";
+     } 
+     if(checkmodpermissions("can_view_off_board") && $row1['userid'] == 0) {
+     $user_votet .= "";
+     }
+
+
+    } else {
+     if(checkmodpermissions("can_view_off_board") && $row1['userid'] != 0) {
+      $user_votet .= " ".$row2['username']." für <b>[".$row['polloption']."]</b><br />";
+     } else {
+      $user_votet .= " ".$row2['username']."<br />";
+     } 
+     if(checkmodpermissions("can_view_off_board") && $row1['userid'] == 0) {
+     $user_votet .= "";
+     }
+
+
+	
+    }
+   }
+// ** Wer hat abgestimmt by Agi ENDE ** //
+
+
+
+FERTIG
+############################################################################################
+Update ist nun abgeschlossen
+Feedback ist erwünscht ;-)
+Agi

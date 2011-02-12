@@ -1,0 +1,1 @@
+ALTER TABLE `bb1_votes` ADD `voteid` VARCHAR(255) NOT NULL;

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install>
+	<installer>
+		<name>Wer hat abgestimmt</name>
+		<title>Grundinstallation</title>
+		<version>2.2</version>
+		<wbbversion>2.3.6</wbbversion>
+		<description>Dies ist die Grundinstallation</description>
+		<updatefrom></updatefrom>
+		<lngfile>install.whovote.lng</lngfile>
+		<wbbfile>install.whovote.wbb</wbbfile>
+		<sqlfile>install.whovote.sql</sqlfile>
+	</installer>
+	<files>
+		<filename>templates/thread_whovote.tpl</filename>
+	</files>
+</install>
