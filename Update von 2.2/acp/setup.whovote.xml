@@ -6,9 +6,8 @@
 		<version>2.3</version>
 		<wbbversion>2.3.6</wbbversion>
 		<description>Dies ist die Grundinstallation</description>
-		<updatefrom>2.1</updatefrom>
-		<sqlfile>install.whovote.sql</sqlfile>
-		<lngfile>update21.whovote.lng</lngfile>
+		<updatefrom>2.2</updatefrom>
+		<lngfile>update22.whovote.lng</lngfile>
 	</installer>
 	<files>
 		<filename>templates/thread_whovote.tpl</filename>

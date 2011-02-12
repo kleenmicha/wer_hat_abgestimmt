@@ -1,0 +1,96 @@
+############################################################################################
+Wer hat schon abgestimmt?
+Boardversion: mind 2.3.6pl2
+Update von Version: 2.2
+Hackversion: 2.3
+Originalautor: Master X
+Recodet und ans WBB 2.3.x angepasst von: Agi
+Überarbeitet von:KleenMicha
+Copyright: GNU GPL (http://www.gnu.de/gpl-ger.html)
+############################################################################################
+
+
+BESCHREIBUNG:
+############################################################################################
+Dieser Hack zeigt an, wer bei Umfragen bereits abgestimmt hat. Hat die Benutzergruppe das 
+Recht, das Forum im Offlinemodus sehen zu dürfen, kann diese zusätzlich sehen, wer
+wofür gestimmt hat
+############################################################################################
+
+
+Installations-Anleitung:
+=======================
+
+1.) Schalte dein Board in den Offline-Modus!
+
+2.) Lade alle Dateien entsprechend ihrer Ordner aus dem Ordner: ./Dateien hoch bis auf:
+./acp/install.whovote.lng
+./acp/install.whovote.sql
+./acp/install.whovote.xml
+
+    Und aus dem ordner: "./Update von 2.2" lädst du alle Dateien entsprechend ihrer Ordnung hoch
+
+
+3.) Nun die setup.php ausführen, über folgenden Link: http://urlzudeinemforum/deinwbbordner/acp/setup.php und befolge die Anweisungen.
+
+4.) Nun die folgenden Dateien bearbeiten:
+./pollvote.php
+./thread.php
+
+
+Öffne die Datei: pollvote.php
+
+Suche nach:
+-----------
+,'".addslashes($polloptionsids)."'
+
+
+Und ERSETZE es durch folgendes:
+-------------------------------
+,'$polloptionsids'
+
+
+
+Öffne die Datei: thread.php
+
+Suche darunter:
+---------------
+// ** Wer hat abgestimmt by Agi edit by KleenMicha START ** //
+if ($_REQUEST['action'] == 'who_vote' && $_REQUEST['pollid'] && $wbbuserdata['a_can_view_whovote']) {
+	$pollid = wbb_trim( $_REQUEST['pollid'] );
+	$user_votet = '';
+	$result = $db->query("SELECT v.*, u.username FROM bb".$n."_votes v
+	LEFT JOIN bb".$n."_users u ON (u.userid = v.userid)
+	WHERE id='".intval($pollid)."' ORDER BY userid ASC");
+
+	while ($polls = $db->fetch_array($result)) {
+		$polls['voteid'] = explode(",", $polls['voteid']);
+		foreach ($polls['voteid'] as $polloptionid) {
+			$results = $db->query("SELECT polloption FROM bb".$n."_polloptions WHERE polloptionid='$polloptionid'");
+			while ($polloption = $db->fetch_array($results)) {
+				if ($wbbuserdata['a_can_view_whovote_detailed'] && $polls['userid'] != 0)
+					$user_votet .= ' <a href="profile.php?userid='.$polls['userid'].'">'.$polls['username'].'</a> f&uuml;r <b>'.$polloption['polloption'].'</b><br />';
+				elseif ($polls['userid'] != 0)
+					$user_votet .= ' <a href="profile.php?userid='.$polls['userid'].'">'.$polls['username'].'</a><br />';
+				else 
+					$user_votet .= '';
+			}
+		}
+	}
+	if ($user_votet == '') $user_votet = 'Es wurden keine Bewertungen von Mitgliedern abgegeben';
+	eval("\$tpl->output(\"".$tpl->get("thread_whovote")."\");");
+	exit();
+}
+// ** Wer hat abgestimmt by Agi edit by KleenMicha ENDE ** //
+
+Und ERSETZE es durch folgendes:
+-------------------------------
+// ** Wer hat abgestimmt by Agi edit by KleenMicha START ** //
+if ($_REQUEST['action'] == 'who_vote' && $_REQUEST['pollid'] && $wbbuserdata['a_can_view_whovote']) {
+	require_once('./modules/mod_whovote.php');
+}
+// ** Wer hat abgestimmt by Agi edit by KleenMicha ENDE ** //
+
+5.) Forum wieder online schalten
+
+Fertig

@@ -1,0 +1,13 @@
+++++++++++++ ChangeLog ++++++++++++
+
+++++++++++++ Wer hat abgestimmt 2.3 ++++++++++++
+
+-- 06.09.07
+
+++++++ Neuerungen ++++++
+- bei mehr als 25 Nutzern werden die Ergebnisse auf mehrere seiten verteilt
+- Sortierung der Ergebisse möglich
+- Gäste werden mit angezeigt (abschaltbar);
+
+++++++ behobene Fehler und Probleme ++++++
+- Sprachvariabeln überarbeitet
